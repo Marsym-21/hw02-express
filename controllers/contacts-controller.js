@@ -1,6 +1,10 @@
 import Contacts from "../models/contacts/index.js";
 import { HttpError } from "../helpers/index.js";
 import { ctrlWrapper } from "../decorators/index.js";
+// import gravatar from "gravatar";
+import resize from "../middlewares/resize.js";
+import fs from "fs/promises";
+import path from "path";
 
 const getAll = async (req, res) => {
 	const { _id: owner } = req.user;
@@ -18,9 +22,19 @@ const getById = async (req, res) => {
 	res.json(result);
 };
 
+const avatarPath = path.resolve("public", "avatars");
+
 const add = async (req, res) => {
 	const { _id: owner } = req.user;
-	const result = await Contacts.create({ ...req.body, owner });
+	// const { email } = req.body;
+	const { path: oldPath, filename } = req.file;
+	// const avatarURL = gravatar.url(email, { protocol: "http", s: "250" });
+
+	const newPath = path.join(avatarPath, filename);
+	await fs.rename(oldPath, newPath);
+	const avatarURL = path.join("public/avatars", filename);
+	resize(avatarURL);
+	const result = await Contacts.create({ ...req.body, owner, avatarURL });
 	res.status(201).json(result);
 };
 
