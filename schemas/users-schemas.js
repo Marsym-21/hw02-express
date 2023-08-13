@@ -16,4 +16,8 @@ const userSigninSchema = Joi.object({
 	email: Joi.string().required().messages({ "any.required": "Email is required" }),
 });
 
-export default { userSignupSchema, userSigninSchema };
+const userEmailSchema = Joi.object({
+	email: Joi.string().required().messages({ "any.required": "Email is required" }),
+});
+
+export default { userSignupSchema, userSigninSchema, userEmailSchema };
